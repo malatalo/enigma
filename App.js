@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import VerticalViewPager from "react-native-vertical-view-pager";
-import KeyboardView from "./keyboard/KeyboardView";
-import RotorView from "./rotor/RotorView";
-import PlugboardView from "./plugboard/PlugboardView";
+import Keyboard from "./keyboard/Keyboard";
+import Rotors from "./rotor/Rotors";
+import Plugboard from "./plugboard/Plugboard";
 
 let { width, height } = Dimensions.get("window");
 height -= 24;
@@ -14,6 +14,8 @@ export default class App extends Component {
     let keys = {};
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(letter => (keys[letter] = false));
     this.state = { keys: keys };
+    this.plugboardRef = React.createRef();
+    this.rotorsRef = React.createRef();
   }
 
   componentDidMount = () => {
@@ -27,36 +29,39 @@ export default class App extends Component {
   };
 
   keyPressIn = key => {
+    let keyAfter1stPlugboard = this.refs.child.keySwitch(key);
     let keys = this.state.keys;
-    keys[key] = true;
+    keys[keyAfter1stPlugboard] = true;
     this.setState({ keys: keys });
   };
 
   keyPressOut = key => {
     let keys = this.state.keys;
-    keys[key] = false;
+    Object.keys(keys).map((key, index) => {
+      keys[key] = false;
+    });
     this.setState({ keys: keys });
   };
 
   render() {
     return (
       <VerticalViewPager
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
         initialPage={2}
         ref={ref => (this.scrollView = ref)}
       >
         <View style={[styles.page_container, { backgroundColor: "#8D6E63" }]}>
-          <RotorView />
+          <Rotors />
         </View>
         <View style={[styles.page_container, { backgroundColor: "#A1887F" }]}>
-          <KeyboardView
+          <Keyboard
             keys={this.state.keys}
             keyPressIn={this.keyPressIn}
             keyPressOut={this.keyPressOut}
           />
         </View>
         <View style={[styles.page_container, { backgroundColor: "#8D6E63" }]}>
-          <PlugboardView />
+          <Plugboard ref="child" />
         </View>
       </VerticalViewPager>
     );

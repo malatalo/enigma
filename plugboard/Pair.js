@@ -2,10 +2,6 @@ import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 export default class Pair extends React.Component {
-  constructor(props) {
-    super(props);
-    console.log("init");
-  }
   render() {
     return (
       <TouchableOpacity

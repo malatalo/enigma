@@ -9,8 +9,9 @@ export default class KeyboardKey extends React.Component {
 
     return (
       <TouchableOpacity
-        onPressIn={() => !this.props.keyIsUsed(this.props.text) && this.props.keyPressed(this.props.text)}
-        style={{ padding: 2 }}
+        onPressIn={() => !this.props.isDisabled && this.props.keyPressed(this.props.text)}
+        style={{ padding: 2, opacity: this.props.isDisabled ? 0.2 : 1 }}
+        disabled={this.props.isDisabled}
       >
         <View
           style={{

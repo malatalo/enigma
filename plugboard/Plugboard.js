@@ -14,12 +14,17 @@ export default class PlugboardView extends React.Component {
     };
   }
 
+  keySwitch = key => {
+    let pair = this.state.pairs.find(pair => pair.one === key || pair.two === key);
+    if(!pair) return key
+    else if(pair.one === key) return pair.two
+    else return pair.one
+  }
+
   setWaitingForPair = id => {
     let idToSet = id;
     if (this.state.waitingForPair === id) {
       idToSet = -1;
-    } else if (this.state.waitingForPair !== -1) {
-      return;
     }
     let pairs = this.state.pairs;
     pairs.filter(pair => pair.id === id).map(pair => (pair.one = pair.two = ""));
@@ -27,7 +32,6 @@ export default class PlugboardView extends React.Component {
   };
 
   keyPressed = key => {
-    console.log(key);
     if (this.state.waitingForPair === -1) {
       return;
     }
@@ -44,18 +48,11 @@ export default class PlugboardView extends React.Component {
     if (pairs[index].one !== "" && pairs[index].two !== "") {
       waitingForPair = -1;
     }
-
     this.setState({ pairs, waitingForPair });
   };
 
   keyIsUsed = key => {
-    let bool = false;
-    this.state.pairs.forEach(pair => {
-      if ((pair.one == key) | (pair.two == key)) {
-        bool = true;
-      }
-    });
-    return bool;
+    return this.state.pairs.filter(p => p.one === key || p.two === key).length > 0;
   };
 
   render() {
@@ -80,9 +77,13 @@ export default class PlugboardView extends React.Component {
                 <PlugboardKey
                   className={t}
                   text={t}
-                  key={t}
+                  key={
+                    this.state.pairs.filter(p => p.one === t || p.two === t).length > 0
+                      ? t + "¯\_(ツ)_/¯"
+                      : t
+                  }
                   keyPressed={this.keyPressed}
-                  keyIsUsed={this.keyIsUsed}
+                  isDisabled={this.keyIsUsed(t)}
                 />
               ))}
             </View>
@@ -111,7 +112,9 @@ const styles = StyleSheet.create({
   plugRows: {
     flex: 1,
     flexDirection: "row",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
   keyboard: {
     height: 175,
